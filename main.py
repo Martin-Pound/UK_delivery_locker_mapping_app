@@ -50,7 +50,7 @@ radius_km = st.number_input("Locker radius coverage km", value=1.0, min_value=0.
 visits_per_week = st.number_input("Locker visits per person per week", value=1.0, min_value=0.0, step=0.1)
 adoption_pct = st.slider("Adoption Percentage", value=20, min_value=0, max_value=100)
 locker_capacity = st.number_input("Locker capacity (parcels per day)", value=50, min_value=1)
-rural_threshold = st.slider("Rural threshold (people per km²)", value=150, min_value=0, max_value=1000, step=10)
+rural_threshold = st.slider("Rural threshold (people per km²)", value=350, min_value=0, max_value=1000, step=10)
 
 coverage_area_km2 = math.pi * radius_km**2
 
@@ -71,10 +71,10 @@ df["classification"] = df["population_per_km2"].apply(lambda x: "Rural" if x < r
 # Forecasted: Average calculation depends on classification
 def calculate_forecast(row):
     if row["classification"] == "Rural":
-        # Average of population and capacity based only
-        return math.ceil((row["lockers_by_population"] + row["lockers_by_capacity"]) / 2)
+        # Only utilize capacity for rural areas
+        return math.ceil(row["lockers_by_capacity"])
     else:
-        # Average of all three
+        # Average of all three for urban areas
         return math.ceil((row["lockers_by_population"] + row["lockers_by_area"] + row["lockers_by_capacity"]) / 3)
 
 df["forecasted_lockers"] = df.apply(calculate_forecast, axis=1)
