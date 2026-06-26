@@ -69,6 +69,14 @@ df["lockers_by_capacity"] = (df["population"] * (adoption_pct / 100) * visits_pe
 # Identify Rural vs Urban
 df["classification"] = df["population_per_km2"].apply(lambda x: "Rural" if x < rural_threshold else "Urban")
 
+# --- Filter Toggle ---
+view_mode = st.radio("View Mode", options=["All", "Urban Only", "Rural Only"], horizontal=True)
+if view_mode == "Urban Only":
+    df = df[df["classification"] == "Urban"].copy()
+elif view_mode == "Rural Only":
+    df = df[df["classification"] == "Rural"].copy()
+# --- End Filter Toggle ---
+
 # Forecasted: Average calculation depends on classification
 def calculate_forecast(row):
     if row["classification"] == "Rural":
