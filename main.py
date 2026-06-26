@@ -50,6 +50,7 @@ radius_km = st.number_input("Locker radius coverage km", value=1.0, min_value=0.
 visits_per_week = st.number_input("Locker visits per person per week", value=1.0, min_value=0.0, step=0.1)
 adoption_pct = st.slider("Adoption Percentage", value=20, min_value=0, max_value=100)
 locker_capacity = st.number_input("Locker capacity (parcels per day)", value=50, min_value=1)
+packing_factor = st.slider("Packing factor (circular overlap)", value=1.2, min_value=1.0, max_value=2.0, step=0.05)
 rural_threshold = st.slider("Rural threshold (people per km²)", value=350, min_value=0, max_value=1000, step=10)
 
 coverage_area_km2 = math.pi * radius_km**2
@@ -60,7 +61,7 @@ if lockers_per_1000 > 0:
 else:
     df["lockers_by_population"] = 0
 
-df["lockers_by_area"] = df["area_km2"] / coverage_area_km2
+df["lockers_by_area"] = (df["area_km2"] / coverage_area_km2) * packing_factor
 
 # New Calculation: Capacity-based
 df["lockers_by_capacity"] = (df["population"] * (adoption_pct / 100) * visits_per_week) / (locker_capacity * 7)
